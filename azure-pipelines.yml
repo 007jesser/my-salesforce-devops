@@ -52,21 +52,21 @@ steps:
 # ——————————————————————————————————————————————————————
 # Authenticate with DevHub (JWT)
 # — Use env: to pass secrets, then call sf via & to avoid quoting issues
-- task: PowerShell@2
-  displayName: 'Authenticate with DevHub (JWT)'
-  env:
-    SF_CLIENT_ID: $(SF_CLIENT_ID)
-    SF_DEVHUB_USERNAME: $(SF_DEVHUB_USERNAME)
-    SERVER_KEY: $(Agent.TempDirectory)\server.key
-  inputs:
-    targetType: 'inline'
-    script: |
-      Write-Host "Authenticating to DevHub…"
-      & sfdx auth:jwt:grant `
-          -i $env:SF_CLIENT_ID `
-          -f $env:SERVER_KEY `
-          -u $env:SF_DEVHUB_USERNAME `
-          --setdefaultdevhubusername
+#- task: PowerShell@2
+#  displayName: 'Authenticate with DevHub (JWT)'
+#  env:
+#    SF_CLIENT_ID: $(SF_CLIENT_ID)
+#    SF_DEVHUB_USERNAME: $(SF_DEVHUB_USERNAME)
+#    SERVER_KEY: $(Agent.TempDirectory)\server.key
+#  inputs:
+#    targetType: 'inline'
+#    script: |
+#      Write-Host "Authenticating to DevHub…"
+#      & sfdx auth:jwt:grant `
+#          -i $env:SF_CLIENT_ID `
+#          -f $env:SERVER_KEY `
+#          -u $env:SF_DEVHUB_USERNAME `
+#          --setdefaultdevhubusername
 
 
 - script: |
