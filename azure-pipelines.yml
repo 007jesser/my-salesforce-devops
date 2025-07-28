@@ -103,7 +103,7 @@ steps:
 
 - script: |
     echo "Running Apex tests"
-    sf apex test run --wait 10 --result-format human --code-coverage --testlevel RunLocalTests
+    sf apex test run --wait 10 --result-format human --code-coverage --test-level RunLocalTests
   displayName: 'Run Apex Tests'
 
 
