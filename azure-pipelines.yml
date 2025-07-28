@@ -62,12 +62,12 @@ steps:
     targetType: 'inline'
     script: |
       Write-Host "Authenticating to DevHub…"
-      Write-Host " sf auth:jwt:grant --client-id $env:SF_CLIENT_ID --jwt-key-file $env:SERVER_KEY --username $env:SF_DEVHUB_USERNAME --set-default-dev-hub"
-      & sf auth jwt:grant `
-          --client-id $env:SF_CLIENT_ID `
-          --jwt-key-file $env:SERVER_KEY `
-          --username $env:SF_DEVHUB_USERNAME `
-          --set-default-dev-hub
+      & sfdx auth:jwt:grant `
+          -i $env:SF_CLIENT_ID `
+          -f $env:SERVER_KEY `
+          -u $env:SF_DEVHUB_USERNAME `
+          --setdefaultdevhubusername
+
 
 - script: |
     sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default
