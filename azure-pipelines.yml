@@ -62,7 +62,7 @@ steps:
     targetType: 'inline'
     script: |
       Write-Host "Authenticating to DevHub…"
-      Write-Host " sf auth jwt:grant --client-id $env:SF_CLIENT_ID --jwt-key-file $env:SERVER_KEY --username $env:SF_DEVHUB_USERNAME --set-default-dev-hub"
+      Write-Host " sf auth:jwt:grant --client-id $env:SF_CLIENT_ID --jwt-key-file $env:SERVER_KEY --username $env:SF_DEVHUB_USERNAME --set-default-dev-hub"
       & sf auth jwt:grant `
           --client-id $env:SF_CLIENT_ID `
           --jwt-key-file $env:SERVER_KEY `
