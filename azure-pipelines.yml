@@ -49,9 +49,16 @@ steps:
   inputs:
     secureFile: 'server.key'  
 
-- script: |
-    sf auth jwt:grant --client-id $(SF_CLIENT_ID) --jwt-key-file $(Agent.TempDirectory)/server.key --username $(SF_DEVHUB_USERNAME) --set-default-dev-hub
+- task: PowerShell@2
   displayName: 'Authenticate with DevHub (JWT)'
+  inputs:
+    targetType: 'inline'
+    script: |
+      sf auth jwt:grant `
+        --client-id "$(SF_CLIENT_ID)" `
+        --jwt-key-file "$(Agent.TempDirectory)\server.key" `
+        --username "$(SF_DEVHUB_USERNAME)" `
+        --set-default-dev-hub
 
 - script: |
     sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default
