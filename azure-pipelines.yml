@@ -55,12 +55,24 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $sfdxDir = "$env:USERPROFILE\.sfdx"
-      if (!(Test-Path $sfdxDir)) {
-        New-Item -ItemType Directory -Path $sfdxDir -Force | Out-Null
+      $authFilename = "jesser.sallemi18@resourceful-koala-vbyb01.com.json"
+      $source = "$(Agent.TempDirectory)\$authFilename"
+      $destinationDir = "$env:USERPROFILE\.sfdx"
+      $destinationFile = "$destinationDir\$authFilename"
+
+      Write-Host "🔍 Checking if file exists at: $source"
+      if (!(Test-Path $source)) {
+        Write-Error "❌ Secure file not found: $source"
+        exit 1
       }
-      Copy-Item "$(Agent.TempDirectory)\devhub-auth.json" "$sfdxDir\jesser.sallemi18@resourceful-koala-vbyb01.com.json" -Force
-      Write-Host "✅ DevHub auth restored."
+
+      if (!(Test-Path $destinationDir)) {
+        New-Item -ItemType Directory -Path $destinationDir -Force | Out-Null
+      }
+
+      Copy-Item $source $destinationFile -Force
+      Write-Host "✅ DevHub auth restored to $destinationFile"
+
 
 # ───────────────────────────────────────────────────────────
 # Salesforce tasks
