@@ -59,7 +59,7 @@ steps:
       if (!(Test-Path $sfdxDir)) {
         New-Item -ItemType Directory -Path $sfdxDir -Force | Out-Null
       }
-      Copy-Item "$(Agent.TempDirectory)\devhub-auth.json" "$sfdxDir\devhub.json" -Force
+      Copy-Item "$(Agent.TempDirectory)\devhub-auth.json" "$sfdxDir\jesser.sallemi18@resourceful-koala-vbyb01.com.json" -Force
       Write-Host "✅ DevHub auth restored."
 
 # ───────────────────────────────────────────────────────────
