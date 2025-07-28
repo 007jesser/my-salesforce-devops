@@ -6,10 +6,11 @@ trigger:
       - feature/*
 
 pool:
-  name: Default  # Your self-hosted agent pool name
+  name: Default  
 
 variables:
-  SFDX_CLI_VERSION: 'latest'
+  SF_CLIENT_ID: $(SF_CLIENT_ID)
+  SF_DEVHUB_USERNAME: $(SF_DEVHUB_USERNAME)
   SCRATCH_ORG_ALIAS: 'ci-scratch-org'
   SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
   PMD_RULESET: 'rulesets/apex/quickstart.xml'
@@ -27,8 +28,24 @@ steps:
 
 - checkout: self
 
+- task: DownloadSecureFile@1
+  name: downloadJWTKey
+  inputs:
+    secureFile: 'server.key'  
+
 - script: |
-    sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default
+    sf auth jwt grant \
+      --client-id $(SF_CLIENT_ID) \
+      --jwt-key-file $(Agent.TempDirectory)/server.key \
+      --username $(SF_DEVHUB_USERNAME) \
+      --set-default-dev-hub
+  displayName: 'Authenticate with DevHub (JWT)'
+
+- script: |
+    sf org create scratch \
+      --definition-file $(SCRATCH_DEF_FILE) \
+      --alias $(SCRATCH_ORG_ALIAS) \
+      --set-default
   displayName: 'Create Scratch Org'
 
 - script: |
@@ -41,16 +58,15 @@ steps:
     sf apex test run --wait 10 --result-format human --code-coverage
   displayName: 'Run Apex Tests'
 
-# Optional: publish test results to Azure DevOps (requires additional setup)
-# - task: PublishTestResults@2
-#   inputs:
-#     testResultsFiles: '**/test-results.xml'
-#     testRunTitle: 'Apex Test Results'
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: '**/test-results.xml'
+    testRunTitle: 'Apex Test Results'
 
 - script: |
     echo "Deploying source to Scratch Org"
-    sf deploy org scratch --wait 10
+    sf deploy metadata \
+      --target-org $(SCRATCH_ORG_ALIAS) \
+      --wait 10
   displayName: 'Deploy to Scratch Org'
-
-# Add any additional steps like metadata deployment to sandbox here
-
