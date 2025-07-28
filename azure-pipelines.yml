@@ -4,8 +4,12 @@ trigger:
       - dev
       - main
 
+
 pool:
-  vmImage: 'ubuntu-latest'
+  name: default
+
+steps:
+- script: echo "Running on self-hosted agent!"
 
 steps:
 - task: NodeTool@0
