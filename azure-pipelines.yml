@@ -1,15 +1,20 @@
 trigger:
   branches:
     include:
-      - dev
       - main
+      - dev
+      - feature/*
 
 pool:
-  name: Default   # Capital D
+  name: Default  # Your self-hosted agent pool name
+
+variables:
+  SFDX_CLI_VERSION: 'latest'
+  SCRATCH_ORG_ALIAS: 'ci-scratch-org'
+  SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
+  PMD_RULESET: 'rulesets/apex/quickstart.xml'
 
 steps:
-- script: echo "Running on self-hosted agent!"
-
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
@@ -23,5 +28,29 @@ steps:
 - checkout: self
 
 - script: |
-    sf org create scratch --definition-file config/project-scratch-def.json --alias ci-scratch-org --set-default
+    sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default
   displayName: 'Create Scratch Org'
+
+- script: |
+    echo "Running PMD Static Code Analysis"
+    pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text
+  displayName: 'Run PMD Code Analysis'
+
+- script: |
+    echo "Running Apex tests"
+    sf apex test run --wait 10 --result-format human --code-coverage
+  displayName: 'Run Apex Tests'
+
+# Optional: publish test results to Azure DevOps (requires additional setup)
+# - task: PublishTestResults@2
+#   inputs:
+#     testResultsFiles: '**/test-results.xml'
+#     testRunTitle: 'Apex Test Results'
+
+- script: |
+    echo "Deploying source to Scratch Org"
+    sf deploy org scratch --wait 10
+  displayName: 'Deploy to Scratch Org'
+
+# Add any additional steps like metadata deployment to sandbox here
+
