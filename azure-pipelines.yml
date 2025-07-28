@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+      - dev
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install --global @salesforce/cli
+    sf --version
+  displayName: 'Install Salesforce CLI'
+
+- checkout: self
+
+- script: |
+    sf org create scratch --definition-file config/project-scratch-def.json --alias ci-scratch-org --set-default
+  displayName: 'Create Scratch Org'
