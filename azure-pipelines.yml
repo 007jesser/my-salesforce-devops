@@ -6,11 +6,9 @@ trigger:
       - feature/*
 
 pool:
-  name: Default  
+  name: Default
 
 variables:
-  SF_CLIENT_ID: 3MVG9k02hQhyUgQBHd6ZDACbtiEQg0XL1deol2YOoHDHVqvme0q_J7u1lRdrCDYgMQOx4GYb6_.pVloT.Ymzx
-  SF_DEVHUB_USERNAME: jesser.sallemi18@resourceful-koala-vbyb01.com
   SCRATCH_ORG_ALIAS: 'ci-scratch-org'
   SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
   PMD_RULESET: 'rulesets/apex/quickstart.xml'
@@ -45,32 +43,57 @@ steps:
 - checkout: self
 
 - task: DownloadSecureFile@1
-  name: downloadJWTKey
+  name: fetchDevhubAuth
   inputs:
-    secureFile: 'server.key'  
+    secureFile: 'jesser.sallemi18@resourceful-koala-vbyb01.com.json'
 
-# ——————————————————————————————————————————————————————
-# Authenticate with DevHub (JWT)
-# — Use env: to pass secrets, then call sf via & to avoid quoting issues
-#- task: PowerShell@2
-#  displayName: 'Authenticate with DevHub (JWT)'
-#  env:
-#    SF_CLIENT_ID: $(SF_CLIENT_ID)
-#    SF_DEVHUB_USERNAME: $(SF_DEVHUB_USERNAME)
-#    SERVER_KEY: $(Agent.TempDirectory)\server.key
-#  inputs:
-#    targetType: 'inline'
-#    script: |
-#      Write-Host "Authenticating to DevHub…"
-#      & sfdx auth:jwt:grant `
-#          -i $env:SF_CLIENT_ID `
-#          -f $env:SERVER_KEY `
-#          -u $env:SF_DEVHUB_USERNAME `
-#          --setdefaultdevhubusername
+- task: PowerShell@2
+  displayName: 'Restore DevHub Auth as devhub.json'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $authFilename = "jesser.sallemi18@resourceful-koala-vbyb01.com.json"
+      $source = "$(Agent.TempDirectory)\$authFilename"
+      $destinationDir = "$env:USERPROFILE\.sfdx"
+      $destinationFile = "$destinationDir\devhub.json"
 
+      Write-Host "Checking if auth file exists at: $source"
+      if (!(Test-Path $source)) {
+        Write-Error "Secure file not found: $source"
+        exit 1
+      }
+
+      if (!(Test-Path $destinationDir)) {
+        New-Item -ItemType Directory -Path $destinationDir -Force | Out-Null
+      }
+
+      Copy-Item $source $destinationFile -Force
+      Write-Host "✅ DevHub auth restored to $destinationFile"
+
+- task: PowerShell@2
+  displayName: 'List .sfdx directory contents'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "Contents of .sfdx folder:"
+      Get-ChildItem "$env:USERPROFILE\.sfdx"
+
+- task: PowerShell@2
+  displayName: 'Check devhub.json username'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $authFile = "$env:USERPROFILE\.sfdx\devhub.json"
+      if (Test-Path $authFile) {
+        $json = Get-Content $authFile | ConvertFrom-Json
+        Write-Host "Dev Hub username from auth file: $($json.username)"
+      } else {
+        Write-Error "devhub.json not found"
+        exit 1
+      }
 
 - script: |
-    sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default
+    sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default --target-dev-hub devhub
   displayName: 'Create Scratch Org'
 
 - script: |
@@ -80,8 +103,9 @@ steps:
 
 - script: |
     echo "Running Apex tests"
-    sf apex test run --wait 10 --result-format human --code-coverage
+    sf apex test run --wait 10 --result-format human --code-coverage --test-level RunLocalTests
   displayName: 'Run Apex Tests'
+
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()
