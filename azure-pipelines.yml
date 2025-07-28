@@ -1,9 +1,10 @@
 trigger:
   branches:
-    include:https://dev.azure.com/jessersallemi
+    include:
       - main
       - dev
       - feature/*
+
 
 pool:
   name: Default  
