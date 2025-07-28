@@ -9,8 +9,8 @@ pool:
   name: Default  
 
 variables:
-  SF_CLIENT_ID: $(SF_CLIENT_ID)
-  SF_DEVHUB_USERNAME: $(SF_DEVHUB_USERNAME)
+  SF_CLIENT_ID: 3MVG9k02hQhyUgQBHd6ZDACbtiEQg0XL1deol2YOoHDHVqvme0q_J7u1lRdrCDYgMQOx4GYb6_.pVloT.Ymzx
+  SF_DEVHUB_USERNAME: jesser.sallemi18@resourceful-koala-vbyb01.com
   SCRATCH_ORG_ALIAS: 'ci-scratch-org'
   SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
   PMD_RULESET: 'rulesets/apex/quickstart.xml'
