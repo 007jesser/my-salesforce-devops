@@ -4,14 +4,12 @@ trigger:
       - dev
       - main
 
-
 pool:
-  name: default
+  name: Default   # Capital D
 
 steps:
 - script: echo "Running on self-hosted agent!"
 
-steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
