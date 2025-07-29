@@ -103,13 +103,14 @@ steps:
 
 - script: |
     echo "Running Apex tests"
-    sf apex run test --target-org <alias or username> --wait 10 \
+    sf apex run test \
+      --target-org $(SCRATCH_ORG_ALIAS) \
+      --wait 10 \
       --test-level RunLocalTests \
       --result-format human \
-      --code-coverage \
-      --target-org $(SCRATCH_ORG_ALIAS) \
-      --wait 10
+      --code-coverage
   displayName: 'Run Apex Tests'
+
 
 
 
