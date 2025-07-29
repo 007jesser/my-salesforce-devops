@@ -103,8 +103,14 @@ steps:
 
 - script: |
     echo "Running Apex tests"
-    sf apex test run --wait 10 --result-format human --code-coverage --test-level RunLocalTests
+    sf apex test run \
+      --test-level RunLocalTests \
+      --result-format human \
+      --code-coverage \
+      --target-org $(SCRATCH_ORG_ALIAS) \
+      --wait 10
   displayName: 'Run Apex Tests'
+
 
 
 - task: PublishTestResults@2
