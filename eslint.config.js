@@ -1,30 +1,23 @@
+'use strict';
+
 const { defineConfig } = require('eslint/config');
 const eslintJs = require('@eslint/js');
 const jestPlugin = require('eslint-plugin-jest');
-const auraConfig = require('@salesforce/eslint-plugin-aura');
-const lwcConfig = require('@salesforce/eslint-config-lwc/recommended');
+const jasminePlugin = require('eslint-plugin-jasmine');
+const salesforceLwcConfig = require('@salesforce/eslint-config-lwc/recommended');
 const globals = require('globals');
 
 module.exports = defineConfig([
-    // Aura configuration
+    // LWC configuration for force-app/main/default/lwc
     {
-        files: ['**/aura/**/*.js'],
-        extends: [
-            ...auraConfig.configs.recommended,
-            ...auraConfig.configs.locker
-        ]
-    },
-
-    // LWC configuration
-    {
-        files: ['**/lwc/**/*.js'],
-        extends: [lwcConfig]
+        files: ['force-app/main/default/lwc/**/*.js'],
+        extends: [salesforceLwcConfig]
     },
 
     // LWC configuration with override for LWC test files
     {
-        files: ['**/lwc/**/*.test.js'],
-        extends: [lwcConfig],
+        files: ['force-app/main/default/lwc/**/*.test.js'],
+        extends: [salesforceLwcConfig],
         rules: {
             '@lwc/lwc/no-unexpected-wire-adapter-usages': 'off'
         },
@@ -37,7 +30,7 @@ module.exports = defineConfig([
 
     // Jest mocks configuration
     {
-        files: ['**/jest-mocks/**/*.js'],
+        files: ['force-app/test/jest-mocks/**/*.js'],
         languageOptions: {
             sourceType: 'module',
             ecmaVersion: 'latest',
@@ -45,6 +38,26 @@ module.exports = defineConfig([
                 ...globals.node,
                 ...globals.es2021,
                 ...jestPlugin.environments.globals.globals
+            }
+        },
+        plugins: {
+            eslintJs
+        },
+        extends: ['eslintJs/recommended']
+    },
+
+    // UTAM tests configuration
+    {
+        files: ['force-app/test/utam/**/*.js'],
+        languageOptions: {
+            sourceType: 'module',
+            ecmaVersion: 'latest',
+            globals: {
+                ...globals.node,
+                ...globals.es2021,
+                ...globals.jasmine,
+                utam: 'readonly',
+                browser: 'readonly'
             }
         },
         plugins: {
