@@ -69,24 +69,25 @@ steps:
 - script: |
     sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default --target-dev-hub devhub
   displayName: 'Create Scratch Org'
-
-# -----------------
-# 6. Security Scan - Secrets
-# -----------------
+#
+# 6. Secret scan - non-interactive trufflehog
+#
 - script: |
-    echo "🔍 Scanning for secrets..."
-    npx trufflehog filesystem --directory . || echo "No secrets found"
+    echo "🔍 Scanning for secrets (non-interactive)..."
+    npx trufflehog filesystem --exit-zero-on-no-findings --json .
   displayName: 'Secret Scan'
   continueOnError: true
-
-# -----------------
-# 7. Vulnerability Scan - Node Dependencies
-# -----------------
+#
+#7. npm audit with lockfile generation
+#
 - script: |
+    echo "📦 Generating package-lock.json for audit..."
+    npm install --package-lock-only
     echo "📦 Running npm audit..."
     npm audit --audit-level=high || echo "Audit completed - non-blocking"
   displayName: 'Node Dependency Audit'
   continueOnError: true
+
 
 # -----------------
 # 8. Static Code Analysis (PMD + Security Rules)
