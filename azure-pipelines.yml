@@ -1,122 +1,121 @@
 trigger:
-  branches:
-    include:
-      - main
-      - dev
-      - feature/*
+    branches:
+        include:
+            - main
+            - dev
+            - feature/*
 
 pool:
-  name: Default
+    name: Default
 
 variables:
-  SCRATCH_ORG_ALIAS: 'ci-scratch-org'
-  SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
-  PMD_RULESET: 'rulesets/apex/quickstart.xml'
+    SCRATCH_ORG_ALIAS: 'ci-scratch-org'
+    SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
+    PMD_RULESET: 'rulesets/apex/quickstart.xml'
 
 steps:
-# -----------------
-# 1. Install Node.js
-# -----------------
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
+    # -----------------
+    # 1. Install Node.js
+    # -----------------
+    - task: NodeTool@0
+      inputs:
+          versionSpec: '18.x'
+      displayName: 'Install Node.js'
 
-# -----------------
-# 2. Clean old Salesforce CLI
-# -----------------
-- task: PowerShell@2
-  displayName: 'Clean existing Salesforce CLI files'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $sfdxPath = "$(Agent.ToolsDirectory)\node\18.20.8\x86\sfdx.cmd"
-      $sfdxFolder = "$(Agent.ToolsDirectory)\node\18.20.8\x86\node_modules\sfdx-cli"
-      if (Test-Path $sfdxPath) { Remove-Item $sfdxPath -Force -ErrorAction SilentlyContinue }
-      if (Test-Path $sfdxFolder) { Remove-Item $sfdxFolder -Recurse -Force -ErrorAction SilentlyContinue }
+    # -----------------
+    # 2. Clean old Salesforce CLI
+    # -----------------
+    - task: PowerShell@2
+      displayName: 'Clean existing Salesforce CLI files'
+      inputs:
+          targetType: 'inline'
+          script: |
+              $sfdxPath = "$(Agent.ToolsDirectory)\node\18.20.8\x86\sfdx.cmd"
+              $sfdxFolder = "$(Agent.ToolsDirectory)\node\18.20.8\x86\node_modules\sfdx-cli"
+              if (Test-Path $sfdxPath) { Remove-Item $sfdxPath -Force -ErrorAction SilentlyContinue }
+              if (Test-Path $sfdxFolder) { Remove-Item $sfdxFolder -Recurse -Force -ErrorAction SilentlyContinue }
 
-# -----------------
-# 3. Install Salesforce CLI
-# -----------------
-- script: |
-    npm install -g @salesforce/cli --force
-    sf --version
-  displayName: 'Install Salesforce CLI'
+    # -----------------
+    # 3. Install Salesforce CLI
+    # -----------------
+    - script: |
+          npm install -g @salesforce/cli --force
+          sf --version
+      displayName: 'Install Salesforce CLI'
 
-- checkout: self
+    - checkout: self
 
-# -----------------
-# 4. Restore DevHub Auth
-# -----------------
-- task: DownloadSecureFile@1
-  name: fetchDevhubAuth
-  inputs:
-    secureFile: 'jesser.sallemi18@resourceful-koala-vbyb01.com.json'
+    # -----------------
+    # 4. Restore DevHub Auth
+    # -----------------
+    - task: DownloadSecureFile@1
+      name: fetchDevhubAuth
+      inputs:
+          secureFile: 'jesser.sallemi18@resourceful-koala-vbyb01.com.json'
 
-- task: PowerShell@2
-  displayName: 'Restore DevHub Auth as devhub.json'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $authFilename = "jesser.sallemi18@resourceful-koala-vbyb01.com.json"
-      $destinationDir = "$env:USERPROFILE\.sfdx"
-      if (!(Test-Path $destinationDir)) { New-Item -ItemType Directory -Path $destinationDir -Force | Out-Null }
-      Copy-Item "$(Agent.TempDirectory)\$authFilename" "$destinationDir\devhub.json" -Force
+    - task: PowerShell@2
+      displayName: 'Restore DevHub Auth as devhub.json'
+      inputs:
+          targetType: 'inline'
+          script: |
+              $authFilename = "jesser.sallemi18@resourceful-koala-vbyb01.com.json"
+              $destinationDir = "$env:USERPROFILE\.sfdx"
+              if (!(Test-Path $destinationDir)) { New-Item -ItemType Directory -Path $destinationDir -Force | Out-Null }
+              Copy-Item "$(Agent.TempDirectory)\$authFilename" "$destinationDir\devhub.json" -Force
 
-# -----------------
-# 5. Create Scratch Org
-# -----------------
-- script: |
-    sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default --target-dev-hub devhub
-  displayName: 'Create Scratch Org'
-#
-# 6. Secret scan - non-interactive trufflehog
-#
-- script: |
-    echo "🔍 Scanning for secrets (non-interactive)..."
-    npx trufflehog filesystem --exit-zero-on-no-findings --json .
-  displayName: 'Secret Scan'
-  continueOnError: true
-#
-#7. npm audit with lockfile generation
-#
-- script: |
-    echo "📦 Generating package-lock.json for audit..."
-    npm install --package-lock-only
-    echo "📦 Running npm audit..."
-    npm audit --audit-level=high || echo "Audit completed - non-blocking"
-  displayName: 'Node Dependency Audit'
-  continueOnError: true
+    # -----------------
+    # 5. Create Scratch Org
+    # -----------------
+    - script: |
+          sf org create scratch --definition-file $(SCRATCH_DEF_FILE) --alias $(SCRATCH_ORG_ALIAS) --set-default --target-dev-hub devhub
+      displayName: 'Create Scratch Org'
+    #
+    # 6. Secret scan - non-interactive trufflehog
+    #
+    - script: |
+          echo "🔍 Scanning for secrets (non-interactive)..."
+          npx trufflehog filesystem --exit-zero-on-no-findings --json .
+      displayName: 'Secret Scan'
+      continueOnError: true
+    #
+    #7. npm audit with lockfile generation
+    #
+    - script: |
+          echo "📦 Generating package-lock.json for audit..."
+          npm install --package-lock-only --engine-strict=false
+          echo "📦 Running npm audit..."
+          npm audit --audit-level=high || echo "Audit completed - non-blocking"
+      displayName: 'Node Dependency Audit'
+      continueOnError: true
 
+    # -----------------
+    # 8. Static Code Analysis (PMD + Security Rules)
+    # -----------------
+    - script: |
+          echo "🔍 Running PMD Static Code + Security Analysis"
+          pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD completed with warnings"
+      displayName: 'Run PMD Code & Security Analysis'
+      continueOnError: true
 
-# -----------------
-# 8. Static Code Analysis (PMD + Security Rules)
-# -----------------
-- script: |
-    echo "🔍 Running PMD Static Code + Security Analysis"
-    pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD completed with warnings"
-  displayName: 'Run PMD Code & Security Analysis'
-  continueOnError: true
+    # -----------------
+    # 9. Run Apex Tests (Non-blocking for Dev)
+    # -----------------
+    - script: |
+          echo "🧪 Running Apex tests..."
+          sf apex run test --target-org $(SCRATCH_ORG_ALIAS) --wait 10 --test-level RunLocalTests --code-coverage --result-format human
+      displayName: 'Run Apex Tests'
+      continueOnError: true
 
-# -----------------
-# 9. Run Apex Tests (Non-blocking for Dev)
-# -----------------
-- script: |
-    echo "🧪 Running Apex tests..."
-    sf apex run test --target-org $(SCRATCH_ORG_ALIAS) --wait 10 --test-level RunLocalTests --code-coverage --result-format human
-  displayName: 'Run Apex Tests'
-  continueOnError: true
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+          testResultsFiles: '**/test-results.xml'
+          testRunTitle: 'Apex Test Results'
 
-- task: PublishTestResults@2
-  condition: succeededOrFailed()
-  inputs:
-    testResultsFiles: '**/test-results.xml'
-    testRunTitle: 'Apex Test Results'
-
-# -----------------
-# 10. Deploy to Scratch Org
-# -----------------
-- script: |
-    echo "🚀 Deploying source to Scratch Org"
-    sf deploy metadata --target-org $(SCRATCH_ORG_ALIAS) --wait 10
-  displayName: 'Deploy to Scratch Org'
+    # -----------------
+    # 10. Deploy to Scratch Org
+    # -----------------
+    - script: |
+          echo "🚀 Deploying source to Scratch Org"
+          sf deploy metadata --target-org $(SCRATCH_ORG_ALIAS) --wait 10
+      displayName: 'Deploy to Scratch Org'

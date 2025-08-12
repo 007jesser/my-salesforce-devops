@@ -1,6 +1,5 @@
 {
     "name": "@salesforce/ebikes-lwc",
-    "private": true,
     "version": "1.0.0",
     "description": "EBikes Sample App - Lightning Web Components",
     "scripts": {
