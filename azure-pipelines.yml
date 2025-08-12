@@ -132,17 +132,18 @@ steps:
           echo "🔐 Running OWASP Dependency-Check..."
           npx audit-ci --high
       displayName: 'OWASP Dependency Security Check'
-      continueOnError:
-          true
+      continueOnError: true
 
-          # -----------------
+    # -----------------
     # Run Snyk Security Scan
     # -----------------
     - script: |
           echo "🔐 Running Snyk Scan..."
+          npx snyk auth fb4188b0-d435-4bbe-adfb-8e23d4a25fd3
           npx snyk test
       displayName: 'Run Snyk Security Scan'
       continueOnError: true
+
     # -----------------
     # Run Lighthouse CI
     # -----------------
