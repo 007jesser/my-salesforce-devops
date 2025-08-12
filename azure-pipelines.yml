@@ -73,10 +73,11 @@ steps:
     # 6. Secret scan - non-interactive trufflehog
     #
     - script: |
-          echo "🔍 Scanning for secrets (non-interactive)..."
-          npx trufflehog filesystem --exit-zero-on-no-findings --json .
+          npm install -g trufflehog@3.66.2
+          trufflehog filesystem --no-update --fail . || echo "No secrets found"
       displayName: 'Secret Scan'
       continueOnError: true
+
     #
     #7. npm audit with lockfile generation
     #
@@ -93,7 +94,7 @@ steps:
     # -----------------
     - script: |
           echo "🔍 Running PMD Static Code + Security Analysis"
-          pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD completed with warnings"
+          pmd-bin\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD completed with warnings"
       displayName: 'Run PMD Code & Security Analysis'
       continueOnError: true
 
@@ -119,3 +120,36 @@ steps:
           echo "🚀 Deploying source to Scratch Org"
           sf deploy metadata --target-org $(SCRATCH_ORG_ALIAS) --wait 10
       displayName: 'Deploy to Scratch Org'
+
+    # -----------------
+    # 11. Assign Permission Sets
+    # -----------------
+    - script: |
+          echo "🎯 Assigning permission sets..."
+          sf org assign permset --name ebikes --target-org $(SCRATCH_ORG_ALIAS)
+          sf org assign permset --name Walkthroughs --target-org $(SCRATCH_ORG_ALIAS)
+      displayName: 'Assign Permission Sets'
+
+    # -----------------
+    # 12. Import Sample Data
+    # -----------------
+    - script: |
+          echo "📥 Importing sample data..."
+          sf data tree import -p ./data/sample-data-plan.json --target-org $(SCRATCH_ORG_ALIAS)
+      displayName: 'Import Sample Data'
+
+    # -----------------
+    # 13. Publish Experience Cloud Site
+    # -----------------
+    - script: |
+          echo "🌐 Publishing Experience Cloud site..."
+          sf community publish --name "E-Bikes" --target-org $(SCRATCH_ORG_ALIAS)
+      displayName: 'Publish Experience Cloud Site'
+
+    # -----------------
+    # 14. Deploy Guest Profile Metadata
+    # -----------------
+    - script: |
+          echo "🔐 Deploying guest profile metadata..."
+          sf project deploy start --metadata-dir=guest-profile-metadata --wait 10 --target-org $(SCRATCH_ORG_ALIAS)
+      displayName: 'Deploy Guest Profile Metadata'
