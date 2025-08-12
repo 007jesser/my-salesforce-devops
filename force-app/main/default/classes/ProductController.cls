@@ -2,17 +2,25 @@
  * @description Product catalog controller providing Aura-enabled helper methods for product queries.
  */
 public with sharing class ProductController {
-    static Integer PAGE_SIZE = 9;
+    private static final Integer defaultPageSize = 9;
 
+    /**
+     * @description Data Transfer Object for product filter criteria.
+     */
     public class Filters {
+        /** @description Keyword to search within product names. */
         @AuraEnabled
         public String searchKey { get; set; }
+        /** @description Maximum price filter. */
         @AuraEnabled
         public Decimal maxPrice { get; set; }
+        /** @description Allowed category values. */
         @AuraEnabled
         public String[] categories { get; set; }
+        /** @description Allowed material values. */
         @AuraEnabled
         public String[] materials { get; set; }
+        /** @description Allowed skill level values. */
         @AuraEnabled
         public String[] levels { get; set; }
     }
@@ -25,9 +33,13 @@ public with sharing class ProductController {
      */
     @AuraEnabled(Cacheable=true)
     public static PagedResult getProducts(Filters filters, Integer pageNumber) {
-        String key, whereClause = '';
+        String key;
+        String whereClause = '';
         Decimal maxPrice;
-        String[] categories, materials, levels, criteria = new List<String>{};
+        List<String> criteria = new List<String>();
+        String[] categories;
+        String[] materials;
+        String[] levels;
         if (filters != null) {
             maxPrice = filters.maxPrice;
             materials = filters.materials;
@@ -56,7 +68,7 @@ public with sharing class ProductController {
                 whereClause = 'WHERE ' + String.join(criteria, ' AND ');
             }
         }
-        Integer pageSize = ProductController.PAGE_SIZE;
+        Integer pageSize = ProductController.defaultPageSize;
         Integer offset = (pageNumber - 1) * pageSize;
         PagedResult result = new PagedResult();
         result.pageSize = pageSize;

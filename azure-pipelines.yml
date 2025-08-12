@@ -81,6 +81,12 @@ steps:
     #
     #7. npm audit with lockfile generation
     #
+    - checkout: self
+
+    - script: |
+          npm ci
+      displayName: 'Install npm dependencies'
+
     - script: |
           echo "📦 Generating package-lock.json for audit..."
           npm install --package-lock-only --engine-strict=false

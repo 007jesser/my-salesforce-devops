@@ -3,7 +3,10 @@
  */
 @IsTest
 private with sharing class CommunitiesLandingControllerTest {
-    public static void testCommunitiesLandingController() {
+    /**
+     * @description Verifies that `forwardToStartPage` returns an empty or null `PageReference` in test context.
+     */
+    public static void testForwardToStartPage() {
         // Create a dummy user to exercise run-as context
         Profile p = [
             SELECT Id
@@ -34,7 +37,7 @@ private with sharing class CommunitiesLandingControllerTest {
                 if (url != null) {
                     System.assert(
                         String.isEmpty(url),
-                        'Expect empty URL in test context.'
+                        'Expect empty URL or null in test context.'
                     );
                 }
             }

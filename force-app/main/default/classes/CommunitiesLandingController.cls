@@ -4,6 +4,7 @@
 public with sharing class CommunitiesLandingController {
     /**
      * @description Returns the community landing `PageReference` for the running user.
+     * @return The community landing page reference.
      */
     public PageReference forwardToStartPage() {
         return Network.communitiesLanding();
