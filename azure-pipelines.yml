@@ -94,6 +94,71 @@ steps:
           npm audit --audit-level=high || echo "Audit completed - non-blocking"
       displayName: 'Node Dependency Audit'
       continueOnError: true
+    # -----------------
+    # 7.1 Run Jest Tests with Coverage
+    # -----------------
+    - script: |
+          echo "🧪 Running Jest tests with coverage..."
+          npx jest --coverage --ci --reporters=default --reporters=jest-junit
+      displayName: 'Run Jest Tests with Coverage'
+      continueOnError: true
+
+    - task: PublishTestResults@2
+      condition: succeededOrFailed()
+      inputs:
+          testResultsFiles: '**/junit.xml'
+          testRunTitle: 'Jest Unit Test Results'
+
+    - task: PublishCodeCoverageResults@2
+      condition: succeededOrFailed()
+      inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: 'coverage/cobertura-coverage.xml'
+          reportDirectory: 'coverage'
+
+    # -----------------
+    # Run ESLint
+    # -----------------
+    - script: |
+          echo "🔍 Running ESLint..."
+          npx eslint . --ext .js,.jsx,.ts,.tsx || echo "Lint warnings found"
+      displayName: 'Run ESLint'
+      continueOnError: true
+
+    # -----------------
+    # Run OWASP Dependency Check
+    # -----------------
+    - script: |
+          echo "🔐 Running OWASP Dependency-Check..."
+          npx audit-ci --high
+      displayName: 'OWASP Dependency Security Check'
+      continueOnError:
+          true
+
+          # -----------------
+    # Run Snyk Security Scan
+    # -----------------
+    - script: |
+          echo "🔐 Running Snyk Scan..."
+          npx snyk test
+      displayName: 'Run Snyk Security Scan'
+      continueOnError: true
+    # -----------------
+    # Run Lighthouse CI
+    # -----------------
+    - script: |
+          echo "📊 Running Lighthouse CI..."
+          npx lhci autorun || echo "Lighthouse issues found"
+      displayName: 'Run Lighthouse CI'
+      continueOnError: true
+    # -----------------
+    # Run Prettier Check
+    # -----------------
+    - script: |
+          echo "🎨 Checking code format with Prettier..."
+          npx prettier --check .
+      displayName: 'Run Prettier Format Check'
+      continueOnError: true
 
     # -----------------
     # 8. Static Code Analysis (PMD + Security Rules)
