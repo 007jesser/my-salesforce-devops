@@ -109,7 +109,7 @@ steps:
     # -----------------
     - script: |
           echo "🧪 Running Apex tests..."
-          sf apex run test --target-org $(SCRATCH_ORG_ALIAS) --wait 2 --test-level -l RunLocalTests --code-coverage --result-format human
+          sf apex run test --target-org myhuborg --wait 2 --test-level RunLocalTests --code-coverage --result-format human
       displayName: 'Run Apex Tests'
       continueOnError: true
 
