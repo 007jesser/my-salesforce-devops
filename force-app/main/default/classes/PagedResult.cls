@@ -2,24 +2,16 @@
  * @description Simple DTO that holds pagination metadata and the resulting record collection.
  */
 public with sharing class PagedResult {
+    /** @description Number of records per page. */
     @AuraEnabled
-    /** @description Number of records per page. */ public Integer pageSize {
-        get;
-        set;
-    }
+    public Integer pageSize { get; set; }
+    /** @description Current 1-based page number. */
     @AuraEnabled
-    /** @description Current 1-based page number. */ public Integer pageNumber {
-        get;
-        set;
-    }
+    public Integer pageNumber { get; set; }
+    /** @description Total number of matching records. */
     @AuraEnabled
-    /** @description Total number of matching records. */ public Integer totalItemCount {
-        get;
-        set;
-    }
+    public Integer totalItemCount { get; set; }
+    /** @description Page of records returned by the query. */
     @AuraEnabled
-    /** @description Page of records returned by the query. */ public List<Object> records {
-        get;
-        set;
-    }
+    public List<Object> records { get; set; }
 }

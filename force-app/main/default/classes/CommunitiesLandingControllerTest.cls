@@ -1,9 +1,6 @@
-/**
- * @description Unit tests for `CommunitiesLandingController`.
- */
 @IsTest
 /**
- * @description Test class for `CommunitiesLandingController`.
+ * @description Unit tests for `CommunitiesLandingController`.
  */
 private with sharing class CommunitiesLandingControllerTest {
     /**
