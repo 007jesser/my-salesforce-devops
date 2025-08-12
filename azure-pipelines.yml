@@ -100,7 +100,7 @@ steps:
     # -----------------
     - script: |
           echo "🔍 Running PMD Static Code + Security Analysis"
-          pmd-bin\pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD completed with warnings"
+          pmd-bin\pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text
       displayName: 'Run PMD Code & Security Analysis'
       continueOnError: true
 
