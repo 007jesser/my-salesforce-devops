@@ -2,6 +2,9 @@
  * @description Unit tests for `CommunitiesLandingController`.
  */
 @IsTest
+/**
+ * @description Test class for `CommunitiesLandingController`.
+ */
 private with sharing class CommunitiesLandingControllerTest {
     /**
      * @description Verifies that `forwardToStartPage` returns an empty or null `PageReference` in test context.

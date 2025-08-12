@@ -2,12 +2,12 @@
  * @description Utility controller that returns record Id and sObject type for a given product or family name.
  */
 public with sharing class ProductRecordInfoController {
-    @AuraEnabled(Cacheable=true)
     /**
      * @description Determines whether the name refers to a `Product__c` or `Product_Family__c` record and returns the Id and type.
      * @param productOrFamilyName Name of the product or family.
      * @return List with two elements: record Id and object API name, or null if not found.
      */
+    @AuraEnabled(cacheable=true)
     public static List<String> getRecordInfo(String productOrFamilyName) {
         List<String> recordInfo = new List<String>();
 

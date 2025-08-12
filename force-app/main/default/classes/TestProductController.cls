@@ -97,7 +97,7 @@ private class TestProductController {
         );
         insert stdUser2;
         // Execute inside runAs to satisfy PMD requirement
-        System.runAs(stdUser) {
+        System.runAs(stdUser2) {
             Product__c baseProduct = [
                 SELECT Id, Name, Product_Family__c
                 FROM Product__c

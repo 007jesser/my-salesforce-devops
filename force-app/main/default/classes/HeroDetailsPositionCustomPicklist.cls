@@ -1,6 +1,7 @@
 /**
  * @description Provides pick-list options for the Hero Details component position (Left/Right) within Visual Editor.
  */
+@SuppressWarnings('PMD.AvoidGlobalModifier')
 public class HeroDetailsPositionCustomPicklist extends VisualEditor.DynamicPickList {
     /**
      * @description Returns the default pick-list value (Right).
