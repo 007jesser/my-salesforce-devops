@@ -19,7 +19,7 @@ steps:
     # -----------------
     - task: NodeTool@0
       inputs:
-          versionSpec: '18.x'
+          versionSpec: '22.x'
       displayName: 'Install Node.js'
 
     # -----------------
@@ -73,7 +73,7 @@ steps:
     # 6. Secret scan - non-interactive trufflehog
     #
     - script: |
-          npm install -g trufflehog@3.66.2
+          npm install -g trufflehog
           trufflehog filesystem --no-update --fail . || echo "No secrets found"
       displayName: 'Secret Scan'
       continueOnError: true
@@ -94,7 +94,7 @@ steps:
     # -----------------
     - script: |
           echo "🔍 Running PMD Static Code + Security Analysis"
-          pmd-bin\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD completed with warnings"
+          pmd-bin\pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD completed with warnings"
       displayName: 'Run PMD Code & Security Analysis'
       continueOnError: true
 
