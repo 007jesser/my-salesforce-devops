@@ -1,4 +1,12 @@
+/**
+ * @description Aura-enabled service class for retrieving `Order_Item__c` records related to a given order.
+ */
 public with sharing class OrderController {
+    /**
+     * @description Returns the list of `Order_Item__c` records for the specified order.
+     * @param orderId The Id of the `Order__c` record.
+     * @return A list of related `Order_Item__c` records.
+     */
     @AuraEnabled(Cacheable=true)
     public static Order_Item__c[] getOrderItems(Id orderId) {
         return [

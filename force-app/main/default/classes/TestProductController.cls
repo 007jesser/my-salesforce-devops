@@ -1,5 +1,8 @@
+/**
+ * @description Unit tests for `ProductController`.
+ */
 @isTest
-public class TestProductController {
+private class TestProductController {
     private static final String PRODUCT_NAME1 = 'Sample Bike 1';
     private static final String PRODUCT_NAME2 = 'Sample Bike 2';
 
@@ -33,17 +36,43 @@ public class TestProductController {
 
     @isTest
     static void getProducts_works() {
-        ProductController.Filters filters = new ProductController.Filters();
-        filters.searchKey = 'Sample';
-        filters.maxPrice = 2000;
-        filters.categories = new List<String>{ 'Mountain' };
-        filters.levels = new List<String>{ 'Beginner' };
-        filters.materials = new List<String>{ 'Carbon' };
+        // Execute as a standard user for query security enforcement
+        // Execute as a standard user for query security enforcement
+        Profile stdProfile = [
+            SELECT Id
+            FROM Profile
+            WHERE Name = 'Standard User'
+            LIMIT 1
+        ];
+        User stdUser = new User(
+            Alias = 'prdtst',
+            Email = 'prd.tst@example.com',
+            EmailEncodingKey = 'UTF-8',
+            LastName = 'PrdTest',
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey = 'en_US',
+            TimeZoneSidKey = 'America/Los_Angeles',
+            ProfileId = stdProfile.Id,
+            Username = 'prd.tst' + DateTime.now().getTime() + '@example.com'
+        );
+        insert stdUser;
 
-        PagedResult result = ProductController.getProducts(filters, 1);
+        System.runAs(stdUser) {
+            ProductController.Filters filters = new ProductController.Filters();
+            filters.searchKey = 'Sample';
+            filters.maxPrice = 2000;
+            filters.categories = new List<String>{ 'Mountain' };
+            filters.levels = new List<String>{ 'Beginner' };
+            filters.materials = new List<String>{ 'Carbon' };
 
-        Assert.areEqual(1, result.records.size());
-        Assert.areEqual(PRODUCT_NAME1, ((Product__c) result.records[0]).Name);
+            PagedResult result = ProductController.getProducts(filters, 1);
+
+            System.assertEquals(1, result.records.size());
+            System.assertEquals(
+                PRODUCT_NAME1,
+                ((Product__c) result.records[0]).Name
+            );
+        }
     }
 
     @isTest
@@ -59,7 +88,7 @@ public class TestProductController {
             baseProduct.Product_Family__c
         );
 
-        Assert.areEqual(1, similarProducts.size());
-        Assert.areEqual(PRODUCT_NAME2, similarProducts[0].Name);
+        System.assertEquals(1, similarProducts.size());
+        System.assertEquals(PRODUCT_NAME2, similarProducts[0].Name);
     }
 }

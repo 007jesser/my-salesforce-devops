@@ -1,12 +1,11 @@
 /**
- * An apex page controller that takes the user to the right start page based on credentials or lack thereof
+ * @description Controller that determines and redirects the user to the correct community start page.
  */
 public with sharing class CommunitiesLandingController {
-    // Code we will invoke on page load.
+    /**
+     * @description Returns the community landing `PageReference` for the running user.
+     */
     public PageReference forwardToStartPage() {
         return Network.communitiesLanding();
-    }
-
-    public CommunitiesLandingController() {
     }
 }

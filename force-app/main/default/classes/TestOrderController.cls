@@ -1,5 +1,8 @@
+/**
+ * @description Unit tests for `OrderController`.
+ */
 @isTest
-public class TestOrderController {
+private class TestOrderController {
     @testSetup
     static void setup() {
         Account acc = new Account(Name = 'Sample Account');
@@ -20,10 +23,34 @@ public class TestOrderController {
 
     @isTest
     static void testGetOrderItems() {
-        Order__c testOrder = [SELECT Id FROM Order__c];
-        List<Order_Item__c> orderItems = OrderController.getOrderItems(
-            testOrder.Id
+        // Run inside user context to mimic portal user permissions
+        Profile p = [
+            SELECT Id
+            FROM Profile
+            WHERE Name = 'Standard User'
+            LIMIT 1
+        ];
+        User contextUser = new User(
+            Alias = 'ordtst',
+            Email = 'ord.tst@example.com',
+            EmailEncodingKey = 'UTF-8',
+            LastName = 'OrderTest',
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey = 'en_US',
+            TimeZoneSidKey = 'America/Los_Angeles',
+            ProfileId = p.Id,
+            Username = 'ord.tst' + DateTime.now().getTime() + '@example.com'
         );
-        Assert.areEqual(1, orderItems.size());
+        insert contextUser;
+
+        System.runAs(contextUser) {
+            {
+                Order__c testOrder = [SELECT Id FROM Order__c];
+                List<Order_Item__c> orderItems = OrderController.getOrderItems(
+                    testOrder.Id
+                );
+                System.assertEquals(1, orderItems.size());
+            }
+        }
     }
 }

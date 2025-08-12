@@ -1,3 +1,6 @@
+/**
+ * @description Simple DTO that holds pagination metadata and the resulting record collection.
+ */
 public with sharing class PagedResult {
     @AuraEnabled
     public Integer pageSize { get; set; }

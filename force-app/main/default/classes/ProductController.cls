@@ -1,3 +1,6 @@
+/**
+ * @description Product catalog controller providing Aura-enabled helper methods for product queries.
+ */
 public with sharing class ProductController {
     static Integer PAGE_SIZE = 9;
 
@@ -14,7 +17,13 @@ public with sharing class ProductController {
         public String[] levels { get; set; }
     }
 
-    @AuraEnabled(Cacheable=true scope='global')
+    /**
+     * @description Returns a paginated list of `Product__c` records that satisfy the provided filter criteria.
+     * @param filters A `Filters` DTO capturing filter criteria entered by the user.
+     * @param pageNumber 1-based page number to return.
+     * @return A `PagedResult` containing products and pagination metadata.
+     */
+    @AuraEnabled(Cacheable=true)
     public static PagedResult getProducts(Filters filters, Integer pageNumber) {
         String key, whereClause = '';
         Decimal maxPrice;
@@ -64,7 +73,13 @@ public with sharing class ProductController {
         return result;
     }
 
-    @AuraEnabled(Cacheable=true scope='global')
+    /**
+     * @description Returns products belonging to the same family as the supplied product, excluding the product itself.
+     * @param productId The Id of the base product.
+     * @param familyId  The Id of the associated `Product_Family__c` record.
+     * @return A list of similar `Product__c` records.
+     */
+    @AuraEnabled(Cacheable=true)
     public static Product__c[] getSimilarProducts(Id productId, Id familyId) {
         return [
             SELECT
