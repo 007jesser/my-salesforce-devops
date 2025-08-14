@@ -139,9 +139,11 @@ steps:
     # -----------------
     - script: |
           echo "🔐 Running Snyk Scan..."
-          npx snyk auth fb4188b0-d435-4bbe-adfb-8e23d4a25fd3
+          npx snyk auth $SNYK_TOKEN
           npx snyk test
       displayName: 'Run Snyk Security Scan'
+      env:
+          SNYK_TOKEN: $(SNYK_TOKEN) # Secret variable in Azure DevOps
       continueOnError: true
 
     # -----------------
