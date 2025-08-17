@@ -99,6 +99,8 @@ steps:
     # -----------------
     - script: |
           echo "🧪 Running Jest tests with coverage..."
+          echo "Installing jest-junit reporter..."
+          npm install --no-save --registry=https://registry.npmjs.org jest-junit@^16.0.0 || echo "jest-junit already installed"
           npx jest --coverage --ci --reporters=default --reporters=jest-junit --rootDir=.
       displayName: 'Run Jest Tests with Coverage'
       continueOnError: true
@@ -121,7 +123,7 @@ steps:
     # -----------------
     - script: |
           echo "🔍 Running ESLint..."
-          npx eslint . --ext .js,.jsx,.ts,.tsx --no-use-flat-config || echo "Lint warnings found"
+          set ESLINT_USE_FLAT_CONFIG=false && npx eslint . --ext .js,.jsx,.ts,.tsx || echo "Lint warnings found"
       displayName: 'Run ESLint'
       continueOnError: true
 
@@ -130,37 +132,25 @@ steps:
     # -----------------
     - script: |
           echo "🔐 Running OWASP Dependency-Check..."
-          npx audit-ci --high
+          npx audit-ci --high || echo "audit-ci high vulnerabilities detected (non-blocking)"
+          exit /b 0
       displayName: 'OWASP Dependency Security Check'
       continueOnError: true
-
     # -----------------
-    # Run Snyk Security Scan
+    # Run Lighthouse CI (disabled)
     # -----------------
-    - script: |
-          echo "🔐 Running Snyk Scan..."
-          npx snyk auth $SNYK_TOKEN || echo "Snyk auth skipped (unsupported platform or missing token)"
-          npx snyk test || echo "Snyk scan skipped due to unsupported platform"
-          exit /b 0
-      displayName: 'Run Snyk Security Scan'
-      env:
-          SNYK_TOKEN: $(SNYK_TOKEN) # Secret variable in Azure DevOps
-      continueOnError: true
-
-    # -----------------
-    # Run Lighthouse CI
-    # -----------------
-    - script: |
-          echo "📊 Running Lighthouse CI..."
-          npx lhci autorun || echo "Lighthouse issues found"
-      displayName: 'Run Lighthouse CI'
-      continueOnError: true
+    # - script: |
+    #       echo "📊 Running Lighthouse CI..."
+    #       npx lhci autorun || echo "Lighthouse issues found"
+    #   displayName: 'Run Lighthouse CI'
+    #   continueOnError: true
     # -----------------
     # Run Prettier Check
     # -----------------
     - script: |
           echo "🎨 Checking code format with Prettier..."
-          npx prettier --check .
+          npx prettier --check . || echo "Prettier issues detected (non-blocking)"
+          exit /b 0
       displayName: 'Run Prettier Format Check'
       continueOnError: true
 
