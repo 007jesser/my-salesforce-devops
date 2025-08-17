@@ -11,7 +11,7 @@ pool:
 variables:
     SCRATCH_ORG_ALIAS: 'ci-scratch-org'
     SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
-    PMD_RULESET: 'rulesets/apex/quickstart.xml'
+    PMD_RULESET: 'category/apex/security.xml'
 
 steps:
     # -----------------
@@ -135,17 +135,7 @@ steps:
           npx audit-ci --high
       displayName: 'OWASP Dependency Security Check'
       continueOnError: true
-    # -----------------
-    # Run Lighthouse CI (disabled)
-    # -----------------
-    # - script: |
-    #       echo "📊 Running Lighthouse CI..."
-    #       npx lhci autorun || echo "Lighthouse issues found"
-    #   displayName: 'Run Lighthouse CI'
-    #   continueOnError: true
-    # -----------------
-    # Run Prettier Check
-    # -----------------
+
     - script: |
           echo "🎨 Checking code format with Prettier..."
           npx prettier --check "force-app/main/default/**/*.{js,html,css,svg,xml,cls}" "scripts/**/*.js" || echo "Prettier issues detected (non-blocking)"
