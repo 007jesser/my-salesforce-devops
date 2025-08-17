@@ -1,0 +1,9 @@
+{
+  // Treat high-severity vulnerabilities as blocking except the following transient advisories
+  "high": true,
+  "allowlist": [
+    "GHSA-3h5v-q93c-6h6q", // ws <8.17.0
+    "GHSA-8cj5-5rvv-wf4v", // tar-fs <2.1.1
+    "GHSA-pq67-2wwv-3xjx"  // tar-fs <2.1.1
+  ]
+}

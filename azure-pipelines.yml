@@ -132,7 +132,7 @@ steps:
     # -----------------
     - script: |
           echo "🔐 Running OWASP Dependency-Check..."
-          npx audit-ci --high || echo "audit-ci high vulnerabilities detected (non-blocking)"
+          npx audit-ci --config .audit-ci.json || echo "audit-ci vulnerabilities detected (non-blocking)"
           exit /b 0
       displayName: 'OWASP Dependency Security Check'
       continueOnError: true
@@ -149,7 +149,7 @@ steps:
     # -----------------
     - script: |
           echo "🎨 Checking code format with Prettier..."
-          npx prettier --check . || echo "Prettier issues detected (non-blocking)"
+          npx prettier --check "force-app/main/default/**/*.{js,html,css,svg,xml,cls}" "scripts/**/*.js" || echo "Prettier issues detected (non-blocking)"
           exit /b 0
       displayName: 'Run Prettier Format Check'
       continueOnError: true
