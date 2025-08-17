@@ -81,5 +81,9 @@
     },
     "dependencies": {
         "webdriverio": "^9.19.1"
+    },
+    "overrides": {
+        "ws": "^8.17.0",
+        "tar-fs": "2.1.1"
     }
 }

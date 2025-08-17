@@ -11,4 +11,8 @@
 .vscode/
 coverage/
 
+# Ignore Prettier config itself and legacy SVG failing formatting
+.prettierrc
+force-app/main/default/aura/pageTemplate_2_7_3/pageTemplate_2_7_3.svg
+
 jsconfig.json

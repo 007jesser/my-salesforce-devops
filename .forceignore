@@ -142,3 +142,5 @@ force-app/test/**
 
 # Default permission set
 **/permissionsets/sfdcInternalInt__sfdc_scrt2.permissionset-meta.xml
+
+**/.eslintrc.json
