@@ -123,7 +123,7 @@ steps:
     # -----------------
     - script: |
           echo "🔍 Running ESLint..."
-          set ESLINT_USE_FLAT_CONFIG=false && npx eslint . --ext .js,.jsx,.ts,.tsx || echo "Lint warnings found"
+          npx eslint "force-app/main/default/lwc/**/*.js" "force-app/test/**/*.js" || echo "Lint warnings found"
       displayName: 'Run ESLint'
       continueOnError: true
 

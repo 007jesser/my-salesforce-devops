@@ -1,0 +1,26 @@
+module.exports = {
+    root: true,
+    extends: [
+        'eslint:recommended',
+        'plugin:lwc/recommended',
+        'plugin:jest/recommended'
+    ],
+    plugins: ['jest'],
+    env: {
+        es6: true,
+        node: true,
+        jest: true
+    },
+    parser: '@babel/eslint-parser',
+    parserOptions: {
+        requireConfigFile: false,
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        ecmaFeatures: {
+            legacyDecorators: true
+        }
+    },
+    rules: {
+        'no-console': 'off'
+    }
+};
