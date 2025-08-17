@@ -132,7 +132,7 @@ steps:
     # -----------------
     - script: |
           echo "🔐 Running OWASP Dependency-Check..."
-          npx audit-ci --config .audit-ci.json || echo "audit-ci vulnerabilities detected (non-blocking)"
+          npx audit-ci --config .audit-ci.jsonc || echo "audit-ci vulnerabilities detected (non-blocking)"
           exit /b 0
       displayName: 'OWASP Dependency Security Check'
       continueOnError: true
@@ -159,8 +159,11 @@ steps:
     # -----------------
     - script: |
           echo "🔍 Running PMD Static Code + Security Analysis"
-          pmd-bin\pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text || echo "PMD violations detected (non-blocking)"
-          exit /b 0
+          pmd-bin\pmd-bin-7.16.0\bin\pmd.bat check ^
+            -d force-app ^
+            -R $(PMD_RULESET) ^
+            -f text ^
+            -failOnViolation false   # 👈 suppress exit-4
       displayName: 'Run PMD Code & Security Analysis'
       continueOnError: true
 
