@@ -1,2 +1,0 @@
-force-app\main\default\classes\CoverageUtilityTest.cls:11:	ApexDoc:	Missing ApexDoc @description
-force-app\main\default\classes\ProductController.cls:5:	FieldNamingConventions:	The constant field name 'defaultPageSize' doesn't match '[A-Z][A-Z0-9_]*'
