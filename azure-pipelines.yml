@@ -11,7 +11,7 @@ pool:
 variables:
     SCRATCH_ORG_ALIAS: 'ci-scratch-org'
     SCRATCH_DEF_FILE: 'config/project-scratch-def.json'
-    PMD_RULESET: 'category/apex/security.xml'
+    PMD_RULESET: 'rulesets/apex/quickstart.xml'
 
 steps:
     # -----------------
@@ -132,13 +132,17 @@ steps:
     # -----------------
     - script: |
           echo "🔐 Running OWASP Dependency-Check..."
-          npx audit-ci --high
+          npx audit-ci --high > results/owasp-report.txt
       displayName: 'OWASP Dependency Security Check'
       continueOnError: true
 
+    # -----------------
+    # Run Prettier
+    # -----------------
     - script: |
           echo "🎨 Checking code format with Prettier..."
-          npx prettier --check "force-app/main/default/**/*.{js,html,css,svg,xml,cls}" "scripts/**/*.js" || echo "Prettier issues detected (non-blocking)"
+          mkdir results 2>nul
+          npx prettier --check "force-app/main/default/**/*.{js,html,css,svg,xml,cls}" "scripts/**/*.js" > results/prettier-report.txt 2>&1 || echo "Prettier issues detected (non-blocking)" >> results/prettier-report.txt
           exit /b 0
       displayName: 'Run Prettier Format Check'
       continueOnError: true
@@ -148,7 +152,7 @@ steps:
     # -----------------
     - script: |
           echo "🔍 Running PMD Static Code + Security Analysis"
-          pmd-bin\pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text
+          pmd-bin\pmd-bin-7.16.0\bin\pmd.bat check -d force-app -R $(PMD_RULESET) -f text -r results/pmd-report.txt || echo "PMD issues found (non-blocking)"
       displayName: 'Run PMD Code & Security Analysis'
       continueOnError: true
 
@@ -157,7 +161,8 @@ steps:
     # -----------------
     - script: |
           echo "🧪 Running Apex tests..."
-          sf apex run test --target-org myhuborg --wait 2 --test-level RunLocalTests --code-coverage --result-format human
+          mkdir results 2>nul
+          sf apex run test --target-org myhuborg --wait 2 --test-level RunLocalTests --code-coverage --result-format human > results/apex-tests.txt 2>&1
       displayName: 'Run Apex Tests'
       continueOnError: true
 
@@ -207,3 +212,11 @@ steps:
           echo "🔐 Deploying guest profile metadata..."
           sf project deploy start --metadata-dir=guest-profile-metadata --wait 10 --target-org $(SCRATCH_ORG_ALIAS)
       displayName: 'Deploy Guest Profile Metadata'
+
+    - script: |
+          git config --global user.email "jesser.sallemi18@gmail.com"
+          git config --global user.name "jesser007"
+          git add results/prettier-report.txt results/apex-tests.txt results/pmd-report.txt results/owasp-report.txt
+          git commit -m "Add latest Prettier & Apex test reports"
+          git push origin main
+      displayName: 'Push reports to GitHub'
