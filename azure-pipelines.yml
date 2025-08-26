@@ -228,7 +228,7 @@ steps:
     - script: |
           git config --global user.email "jesser.sallemi18@gmail.com"
           git config --global user.name "jesser007"
-          git add results/prettier-report.txt results/apex-tests.txt results/pmd-report.txt results/owasp-report.txt
+          git add results/prettier-report.txt results/apex-tests.txt results/pmd-report.txt
           git commit -m "Add latest Prettier & Apex test reports"
           git push origin main
       displayName: 'Push reports to GitHub'
