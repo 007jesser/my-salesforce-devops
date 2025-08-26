@@ -130,11 +130,23 @@ steps:
     # -----------------
     # Run OWASP Dependency Check
     # -----------------
-    - script: |
-          echo "🔐 Running OWASP Dependency-Check..."
-          npx audit-ci --high > results/owasp-report.txt
+    - task: Bash@3
       displayName: 'OWASP Dependency Security Check'
       continueOnError: true
+      inputs:
+          targetType: 'inline'
+          script: |
+              echo "🔐 Running OWASP Dependency-Check..."
+              npx audit-ci --high --json
+
+    - task: Bash@3
+      displayName: 'Save OWASP Report'
+      continueOnError: true
+      inputs:
+          targetType: 'inline'
+          script: |
+              mkdir -p results
+              npx audit-ci --high --json > results/owasp-report.txt || echo "OWASP issues found (non-blocking)" >> results/owasp-report.txt
 
     # -----------------
     # Run Prettier
