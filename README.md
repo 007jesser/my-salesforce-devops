@@ -1,10 +1,10 @@
-# E-Bikes Lightning Web Components Sample Application
+# Salesforce DevOps CI/CD Pipeline – Internship Project
 
-[![CI](https://github.com/trailheadapps/ebikes-lwc/actions/workflows/ci.yml/badge.svg)](https://github.com/trailheadapps/ebikes-lwc/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/trailheadapps/ebikes-lwc/branch/main/graph/badge.svg)](https://codecov.io/gh/trailheadapps/ebikes-lwc)
 
-![ebikes-logo](ebikes-logo.png)
 
-E-Bikes is a sample application that demonstrates how to build applications with Lightning Web Components and integrate with Salesforce Experiences. E-Bikes is a fictitious electric bicycle manufacturer. The application helps E-Bikes manage their products and reseller orders using a rich user experience.
+This repository demonstrates a complete Azure DevOps CI/CD pipeline for Salesforce DX created during my summer internship.
+
+The open-source *E-Bikes* LWC sample app is included **only as a workload** to validate the pipeline; the project’s goal is to showcase DevOps best practices, not the application itself.
 
 <div>
     <img src="https://res.cloudinary.com/hy4kyit2a/f_auto,fl_lossy,q_70,w_50/learn/projects/quick-start-ebikes-sample-app/a11bf85d136053cdb4745123c4d0ae61_badge.png" align="left" alt="Trailhead Badge"/>
