@@ -29,6 +29,49 @@ E-Bikes is a sample application that demonstrates how to build applications with
     - [UI tests with UTAM](#ui-tests)
     - [Code Tours](#code-tours)
 
+## Azure DevOps CI/CD Pipeline for Salesforce (Internship Project)
+
+During my summer internship I designed and implemented a full **Salesforce DevOps pipeline** in Azure DevOps.
+
+**Key highlights**
+
+1. **Multi-branch trigger** – automatically runs on `main`, `dev` and `feature/*` branches.
+2. **Environment setup**  
+   • Installs Node.js 20  
+   • Installs the latest Salesforce CLI  
+   • Restores DevHub authentication from a secure file.
+3. **Scratch-org automation** – creates a fresh scratch org for every run ensuring clean, repeatable deployments.
+4. **Quality gates**  
+   • Secret scanning with `trufflehog`  
+   • Dependency vulnerability scan using `npm audit` & OWASP dependency-check  
+   • Code style & linting via Prettier & ESLint  
+   • Static code analysis for Apex & LWC using **PMD**.
+5. **Automated tests**  
+   • LWC unit tests with Jest (coverage & JUnit reports)  
+   • Apex tests with code coverage publishing.
+6. **Deployment & seeding**  
+   • Deploys metadata to the scratch org  
+   • Assigns permission sets, imports sample data, publishes the Experience Cloud site, and deploys guest-profile metadata.
+7. **Feedback loop** – pushes generated reports (tests, lint, formatting, PMD) back to GitHub for transparent quality history.
+
+### Quick-start: run the pipeline yourself
+
+1. Create an Azure DevOps project and import (or fork) this repository.
+2. In **Pipelines > Library > Secure files** upload your DevHub auth file (e.g. `mydevhub.json`) and update the filename in `azure-pipelines.yml` step *DownloadSecureFile*.
+3. Ensure these pipeline variables exist (or keep their defaults):
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `SCRATCH_ORG_ALIAS` | `ci-scratch-org` | Scratch-org alias used during execution |
+| `SCRATCH_DEF_FILE`  | `config/project-scratch-def.json` | Scratch-org definition file |
+| `PMD_RULESET`       | `rulesets/apex/quickstart.xml` | PMD ruleset to execute |
+
+4. Commit to `main`, `dev` or any `feature/*` branch – the pipeline will trigger automatically.
+
+> Feel free to tweak the YAML to fit your own naming conventions, quality gates or deployment targets.
+
+---
+
 ## Installing E-Bikes using a Scratch Org
 
 1. Set up your environment. Follow the steps in the [Quick Start: Lightning Web Components](https://trailhead.salesforce.com/content/learn/projects/quick-start-lightning-web-components/) Trailhead project. The steps include:
